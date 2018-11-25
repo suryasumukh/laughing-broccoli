@@ -110,14 +110,14 @@ class DOAJValidator(threading.Thread):
                 if results:
                     doaj_article = results[0]
                     article['doaj_id'] = doaj_article['id']
-                    article['doaj_authors'] = doaj_article['bibjson'].get('author', None)
+                    article['doaj_authors'] = doaj_article['bibjson'].get('author', [])
                     self._sink.put((article_id, article))
                     logger.info('queued article: {} / doi: {} for further processing'.format(article_id, doi))
                 else:
                     logger.info('DOAJ Query did not return results for doi: {}, skipping article'.format(doi))
             elif response.status_code == 429:
                 # Throttle processing
-                logger.info('Server returned status {}, waiting for {}s before next request'.format(
+                logger.info('DOAJ Server returned status {}, waiting for {}s before next request'.format(
                     response.status_code,
                     self._delay))
                 self._source.put(task)
@@ -149,19 +149,24 @@ class Counters(threading.Thread):
 
     def update_counters(self, task):
         article_id, article = task
-        doaj_authors = article.get('doaj_authors', None)
+        doaj_authors = article.get('doaj_authors', [])
         doaj_id = article.get('doaj_id', None)
         plos_id = article.get('id', None)
 
         authors = []
         deps = []
-        for author in doaj_authors:
-            name = author.get('name', None)
-            dep = author.get('affiliation', None)
-            if name:
-                authors.append((name, doaj_id, plos_id))
-            if dep:
-                deps.append((dep, doaj_id, plos_id))
+        if doaj_authors:
+            for author in doaj_authors:
+                name = author.get('name', None)
+                dep = author.get('affiliation', None)
+                if name:
+                    authors.append((name, doaj_id, plos_id))
+                if dep:
+                    deps.append((dep, doaj_id, plos_id))
+        else:
+            plos_authors = article.get('author_display', [])
+            for author in plos_authors:
+                authors.append((author, doaj_id, plos_id))
 
         journals = [(article.get('journal', None), doaj_id, plos_id)]
 
