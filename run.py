@@ -45,28 +45,26 @@ class PLOSAPIReader(object):
         return self
 
 
-sample_json = {'id': '10.1371/journal.pone.0076005',
-               'journal': 'PLoS ONE',
-               'eissn': '1932-6203',
-               'publication_date': '2013-10-01T00:00:00Z',
-               'article_type': 'Research Article',
-               'author_display': ['Kolappan Chockalingam',
-                                  'Chandrasekaran Vedhachalam',
-                                  'Subramani Rangasamy',
-                                  'Gomathi Sekar',
-                                  'Srividya Adinarayanan',
-                                  'Soumya Swaminathan',
-                                  'Pradeep Aravindan Menon'],
-               'abstract': [
-                   'Background: Tobacco use leads to many health complications and is a risk factor for the occurrence of cardio vascular diseases, lung and oral cancers, chronic bronchitis etc. Almost 6 million people die from tobacco-related causes every year. This study was conducted to measure the prevalence of tobacco use in three different areas around Chennai city, south India. Methods: A survey of 7510 individuals aged >\u200a=\u200a15 years was undertaken covering Chennai city (urban), Ambattur (semi-urban) and Sriperumbudur (rural) taluk. Details on tobacco use were collected using a questionnaire adapted from both Global Youth Tobacco Survey and Global Adults Tobacco Survey. Results: The overall prevalence of tobacco use was significantly higher in the rural (23.7%) compared to semi-urban (20.9%) and urban (19.4%) areas (P value <0.001) Tobacco smoking prevalence was 14.3%, 13.9% and 12.4% in rural, semi-urban and urban areas respectively. The corresponding values for smokeless tobacco use were 9.5%, 7.0% and 7.0% respectively. Logistic regression analysis showed that the odds of using tobacco (with smoke or smokeless forms) was significantly higher among males, older individuals, alcoholics, in rural areas and slum localities. Behavioural pattern analysis of current tobacco users led to three groups (1) those who were not reached by family or friends to advice on harmful effects (2) those who were well aware of harmful effects of tobacco and even want to quit and (3) those are exposed to second hand/passive smoking at home and outside. Conclusions: Tobacco use prevalence was significantly higher in rural areas, slum dwellers, males and older age groups in this region of south India. Women used mainly smokeless tobacco. Tobacco control programmes need to develop strategies to address the different subgroups among tobacco users. Public health facilities need to expand smoking cessation counseling services as well as provide pharmacotherapy where necessary. '],
-               'title_display': 'Prevalence of Tobacco Use in Urban, Semi Urban and Rural Areas in and around Chennai City, India',
-               'score': 6.777194}
-
-
 class TestReader(object):
     def __init__(self, n):
         self.n = n
         self._start = 0
+        self.sample = {'id': '10.1371/journal.pone.0076005',
+                       'journal': 'PLoS ONE',
+                       'eissn': '1932-6203',
+                       'publication_date': '2013-10-01T00:00:00Z',
+                       'article_type': 'Research Article',
+                       'author_display': ['Kolappan Chockalingam',
+                                          'Chandrasekaran Vedhachalam',
+                                          'Subramani Rangasamy',
+                                          'Gomathi Sekar',
+                                          'Srividya Adinarayanan',
+                                          'Soumya Swaminathan',
+                                          'Pradeep Aravindan Menon'],
+                       'abstract': [
+                           'Background: Tobacco use leads to many health complications and is a risk factor for the occurrence of cardio vascular diseases, lung and oral cancers, chronic bronchitis etc. Almost 6 million people die from tobacco-related causes every year. This study was conducted to measure the prevalence of tobacco use in three different areas around Chennai city, south India. Methods: A survey of 7510 individuals aged >\u200a=\u200a15 years was undertaken covering Chennai city (urban), Ambattur (semi-urban) and Sriperumbudur (rural) taluk. Details on tobacco use were collected using a questionnaire adapted from both Global Youth Tobacco Survey and Global Adults Tobacco Survey. Results: The overall prevalence of tobacco use was significantly higher in the rural (23.7%) compared to semi-urban (20.9%) and urban (19.4%) areas (P value <0.001) Tobacco smoking prevalence was 14.3%, 13.9% and 12.4% in rural, semi-urban and urban areas respectively. The corresponding values for smokeless tobacco use were 9.5%, 7.0% and 7.0% respectively. Logistic regression analysis showed that the odds of using tobacco (with smoke or smokeless forms) was significantly higher among males, older individuals, alcoholics, in rural areas and slum localities. Behavioural pattern analysis of current tobacco users led to three groups (1) those who were not reached by family or friends to advice on harmful effects (2) those who were well aware of harmful effects of tobacco and even want to quit and (3) those are exposed to second hand/passive smoking at home and outside. Conclusions: Tobacco use prevalence was significantly higher in rural areas, slum dwellers, males and older age groups in this region of south India. Women used mainly smokeless tobacco. Tobacco control programmes need to develop strategies to address the different subgroups among tobacco users. Public health facilities need to expand smoking cessation counseling services as well as provide pharmacotherapy where necessary. '],
+                       'title_display': 'Prevalence of Tobacco Use in Urban, Semi Urban and Rural Areas in and around Chennai City, India',
+                       'score': 6.777194}
 
     @sleep_and_retry
     @limits(calls=300, period=60 * 60)
@@ -74,7 +72,7 @@ class TestReader(object):
     def __next__(self):
         if self._start < self.n:
             self._start += 100
-            return [sample_json] * 200
+            return [self.sample] * 200
         else:
             raise StopIteration()
 
