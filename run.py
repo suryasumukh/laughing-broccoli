@@ -158,15 +158,15 @@ class Counters(threading.Thread):
                 name = author.get('name', None)
                 dep = author.get('affiliation', None)
                 if name:
-                    authors.append((name, doaj_id, plos_id))
+                    authors.append(name)
                 if dep:
-                    deps.append((dep, doaj_id, plos_id))
+                    deps.append(dep)
         else:
             plos_authors = article.get('author_display', [])
             for author in plos_authors:
-                authors.append((author, doaj_id, plos_id))
+                authors.append(author)
 
-        journals = [(article.get('journal', None), doaj_id, plos_id)]
+        journals = [article.get('journal', None)]
 
         logger.info('Updating counts for article: {}'.format(article_id))
         self._authors.update(authors)
@@ -176,10 +176,13 @@ class Counters(threading.Thread):
 
 def save_csv(counter: Counter, filename: str):
     logger.info('Saving counter: {}'.format(filename))
-    with open(filename, 'w') as fh:
-        csv_fh = csv.writer(fh)
-        for k, v in counter.most_common():
-            csv_fh.writerow(list(k) + [v])
+    with open(filename, 'w', encoding='utf-8') as fh:
+        if len(counter):
+            for k, v in counter.most_common():
+                if not k:
+                    continue
+                line = ','.join([k, str(v)]) + "\n"
+                fh.write(line)
 
 
 if __name__ == '__main__':
@@ -230,6 +233,10 @@ if __name__ == '__main__':
         counter.join()
 
     # save counts
+    print(authors)
+    print(journals)
+    print(departments)
+
     save_csv(authors, 'authors.csv')
     save_csv(departments, 'departments.csv')
     save_csv(journals, 'journals.csv')
